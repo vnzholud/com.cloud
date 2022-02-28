@@ -9,12 +9,12 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
 
     //событие когда клиент подключился
     @Override
-    public void channelActive(ChannelHandlerContext ctx) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) {
         System.out.println("Клиент подключился: "+ ctx);
     }
 
     @Override
-    public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
+    public void channelRead(ChannelHandlerContext ctx, Object msg) {
         ByteBuf buf = (ByteBuf)msg; //работа с байтбуффером
         // чтение из байтбуффера
         while (buf.readableBytes() > 0) {
@@ -25,7 +25,7 @@ public class MainHandler extends ChannelInboundHandlerAdapter {
 
     //событие когда получили исключение
     @Override
-    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+    public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) {
 
         cause.printStackTrace();
         ctx.close();
