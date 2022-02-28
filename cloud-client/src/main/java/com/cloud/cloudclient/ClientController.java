@@ -1,6 +1,7 @@
 package com.cloud.cloudclient;
 
 import javafx.application.Platform;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -34,17 +35,56 @@ public class ClientController implements Initializable {
         filenameColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getFilename()));
         filenameColumn.setPrefWidth(240);
 
+        // Создаем столбец с параметрами размера
+        TableColumn<FileInfo, Long> fileSizeColumn = new TableColumn<>("Размер");
+        fileSizeColumn.setCellValueFactory(param -> new SimpleObjectProperty<>(param.getValue().getSize()));
 
-        filesTable.getColumns().addAll(fileTypeColumn, filenameColumn);
+
+        //Корректный вывод информации
+        fileSizeColumn.setCellFactory(column -> {
+            return new TableCell<FileInfo, Long>() {
+                @Override
+                protected void updateItem(Long item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (item == null || empty) {
+                        setText(null);
+                        setStyle("");
+                    } else {
+                        String text = String.format("%,d bytes", item);
+                        if (item == -1L) {
+                            text = "[DIR]";
+                        }
+                        setText(text);
+                    }
+                }
+            };
+        });
+        fileSizeColumn.setPrefWidth(120);
+
+
+        filesTable.getColumns().addAll(fileTypeColumn, filenameColumn,fileSizeColumn);
+
+        filesTable.getSortOrder().add(fileTypeColumn);//сортируем по первому столбцу
+
+        updateList(Paths.get("."));
     }
+
 
 
 
 
     // Медод получения файлов из католога
 
-    public void UpdatList(Path path){
-
+    public void updateList(Path path){
+        try {
+            //pathField.setText(path.normalize().toAbsolutePath().toString());
+            filesTable.getItems().clear();
+            filesTable.getItems().addAll(Files.list(path).map(FileInfo::new).collect(Collectors.toList()));
+            filesTable.sort();
+        } catch (IOException e) {
+            Alert alert = new Alert(Alert.AlertType.WARNING, "По какой-то причине не удалось обновить список файлов", ButtonType.OK);
+            alert.showAndWait();
+        }
     }
 
 
