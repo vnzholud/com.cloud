@@ -77,12 +77,14 @@ public class PanelController implements Initializable {
         filesTable.getColumns().addAll(fileTypeColumn, filenameColumn, fileSizeColumn, fileDateColumn);
         filesTable.getSortOrder().add(fileTypeColumn);//сортируем по первому столбцу
 
+        // получение списка дисков
         disksBox.getItems().clear();
         for (Path p : FileSystems.getDefault().getRootDirectories()) {
             disksBox.getItems().add(p.toString());
         }
         disksBox.getSelectionModel().select(0);
 
+        // Переход по дирректориям по двойному клику мышки
         filesTable.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
@@ -111,6 +113,7 @@ public class PanelController implements Initializable {
         }
     }
 
+    // Метод отработки нажития кнопки вверх
     public void btnPathUpAction(ActionEvent actionEvent) {
         Path upperPath = Paths.get(pathField.getText()).getParent();
         if (upperPath != null) {
@@ -123,6 +126,7 @@ public class PanelController implements Initializable {
         updateList(Paths.get(element.getSelectionModel().getSelectedItem()));
     }
 
+    // Получение имени выбранного файла
     public String getSelectedFilename() {
         if (!filesTable.isFocused()) {
             return null;
